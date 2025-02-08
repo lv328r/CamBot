@@ -5,6 +5,7 @@
 using System;
 using System.Windows.Forms;
 using System.Diagnostics;
+using Emgu.CV;
 
 namespace VideoSurveilance
 {
@@ -110,12 +111,16 @@ namespace VideoSurveilance
 
             InitializeComponent();
 
+            ListAvailableCameras(); // Find available cameras
+
             robot = 
                 new Robot(
                     SERVO_MOVE_SPEED, 
                     LED_CHANGE_SPEED, 
                     HOME_PAN, 
                     HOME_TILT);
+
+            int cameraIndex = 2;
 
             camera =
                 new CameraTracking(
@@ -125,12 +130,35 @@ namespace VideoSurveilance
                     LARGEST_DETECTION_HEIGHT_SIZE_DIVISOR,
                     LARGEST_DETECTION_WIDTH_SIZE_DIVISOR,
                     SMALLEST_DETECTION_HEIGHT_SIZE_DIVISOR,
-                    SMALLEST_DETECTION_WIDTH_SIZE_DIVISOR);
+                    SMALLEST_DETECTION_WIDTH_SIZE_DIVISOR,
+            cameraIndex);
 
             Application.Idle += ProcessFrame;
         }
         
-        void ProcessFrame(object sender, EventArgs e)
+private void ListAvailableCameras()
+    {
+        for (int i = 0; i < 5; i++) // Check first 5 indices
+        {
+            try
+            {
+                using (VideoCapture capture = new VideoCapture(i))
+                {
+                    if (capture.IsOpened)
+                    {
+                        Debug.WriteLine($"Camera {i} available.");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Camera {i} not available: {ex.Message}");
+            }
+        }
+    }
+
+
+    void ProcessFrame(object sender, EventArgs e)
         {
             var frameData = camera.Update();
 
@@ -187,4 +215,6 @@ namespace VideoSurveilance
             }
         }
     }
+
+
 }

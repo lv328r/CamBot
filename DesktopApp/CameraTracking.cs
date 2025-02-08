@@ -28,7 +28,7 @@ namespace VideoSurveilance
         private Emgu.CV.Mat lastMask;
 
         
-        public CameraTracking(int subtractionHistory, int subtractionThreshold, int frameBlurStrength, int largestDetectionHeightSizeDivisor, int largestDetectionWidthSizeDivisor, int smallestDetectionHeightSizeDivisor, int smallestDetectionWidthSizeDivisor)
+        public CameraTracking(int subtractionHistory, int subtractionThreshold, int frameBlurStrength, int largestDetectionHeightSizeDivisor, int largestDetectionWidthSizeDivisor, int smallestDetectionHeightSizeDivisor, int smallestDetectionWidthSizeDivisor, int cameraIndex = 0)
         {
             Debug.WriteLine("CameraTracking:: Initializing");
 
@@ -44,7 +44,7 @@ namespace VideoSurveilance
 
             try
             {
-                CameraTracking._cameraCapture = new VideoCapture();
+                CameraTracking._cameraCapture = new VideoCapture(cameraIndex);
 
                 // I had to set this by hand to match our camera as opencv doesn't always pull these properties correctly 
                 // and sometimes shows funky frames or nothing at all
